@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { loginAdminServer, resetPasswordServer } from './actions';
 import { Truck, Lock, Mail, AlertCircle, Loader2, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 export default function LoginPage() {
@@ -29,7 +30,7 @@ export default function LoginPage() {
     checkSession();
   }, [router]);
 
-  // Submit de Login
+  // Submit de Login via Server Actions (Bypassa Adblocker / Firewall no cliente)
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -37,27 +38,20 @@ export default function LoginPage() {
     setSuccessMessage(null);
 
     try {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const result = await loginAdminServer(email, password);
 
-      if (authError) throw authError;
-
-      // Verificar o role do perfil antes de permitir entrada como admin
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', data.user.id)
-        .single();
-
-      if (profileError) {
-        console.warn('Perfil de banco de dados não encontrado, mas autenticação foi bem-sucedida.');
+      if (!result.success) {
+        throw new Error(result.error);
       }
 
-      if (profile && profile.role !== 'admin') {
-        await supabase.auth.signOut();
-        throw new Error('Acesso negado. Apenas administradores podem acessar esta área.');
+      if (result.session) {
+        // Setar a sessão manualmente no cliente
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: result.session.access_token!,
+          refresh_token: result.session.refresh_token!,
+        });
+
+        if (sessionError) throw sessionError;
       }
 
       router.push('/admin');
@@ -70,7 +64,7 @@ export default function LoginPage() {
     }
   };
 
-  // Submit de Recuperação de Senha
+  // Submit de Recuperação de Senha via Server Actions
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -78,11 +72,11 @@ export default function LoginPage() {
     setSuccessMessage(null);
 
     try {
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/login`,
-      });
+      const result = await resetPasswordServer(email, window.location.origin);
 
-      if (resetError) throw resetError;
+      if (!result.success) {
+        throw new Error(result.error);
+      }
 
       setSuccessMessage('E-mail de recuperação enviado! Verifique sua caixa de entrada e spam.');
       setEmail('');

@@ -50,6 +50,8 @@ export interface Proposta {
   tipo_proposta: TipoProposta;
   mensagem: string | null;
   criada_em: string;
+  status?: string;
+  observacoes?: string;
   
   // Relações que podem ser carregadas
   veiculo?: Veiculo;

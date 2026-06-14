@@ -13,9 +13,9 @@ function getSupabaseServer() {
  * Realiza o login do administrador no lado do servidor para evitar bloqueios de rede no navegador.
  */
 export async function loginAdminServer(email: string, password: string) {
-  const supabase = getSupabaseServer();
-
   try {
+    const supabase = getSupabaseServer();
+
     const { data, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -42,13 +42,13 @@ export async function loginAdminServer(email: string, password: string) {
       return { success: false, error: 'Acesso negado. Este usuário não é um administrador.' };
     }
 
-    // Retorna a sessão para o cliente setar no localStorage/cookies do navegador
+    // Retorna a sessão para o cliente setar no localStorage/cookies do navegador.
+    // Retornamos apenas os tokens de acesso para evitar erros de serialização de objetos complexos (User) no React 19.
     return { 
       success: true, 
       session: {
-        access_token: data.session?.access_token,
-        refresh_token: data.session?.refresh_token,
-        user: data.user
+        access_token: data.session?.access_token || null,
+        refresh_token: data.session?.refresh_token || null,
       } 
     };
   } catch (err: any) {

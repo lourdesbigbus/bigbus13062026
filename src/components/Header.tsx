@@ -28,14 +28,14 @@ export default function Header() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="bg-accent p-2.5 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
-              <Truck className="h-6 w-6 text-primary font-bold" />
+            <div className="relative h-14 w-14 shrink-0 group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_4px_6px_rgba(245,158,11,0.2)]">
+              <img src="/logo.svg" alt="BigBus Logo" className="w-full h-full object-contain" />
             </div>
             <div>
-              <span className="font-extrabold text-2xl tracking-tight uppercase block">
+              <span className="font-extrabold text-2xl tracking-tight uppercase block text-white group-hover:text-accent transition-colors">
                 Big<span className="text-accent">Bus</span>
               </span>
-              <span className="text-[10px] tracking-[0.2em] uppercase text-gray-400 block -mt-1">
+              <span className="text-[10px] tracking-[0.2em] uppercase text-gray-400 block -mt-1 font-semibold">
                 25 Anos de Tradição
               </span>
             </div>

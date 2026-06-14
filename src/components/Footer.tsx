@@ -21,11 +21,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand & Tradition */}
           <div className="space-y-4 col-span-1 md:col-span-1">
-            <Link href="/" className="flex items-center space-x-3 text-white">
-              <div className="bg-accent p-2.5 rounded-lg flex items-center justify-center">
-                <Truck className="h-5 w-5 text-primary" />
+            <Link href="/" className="flex items-center space-x-3 text-white group">
+              <div className="relative h-12 w-12 shrink-0 group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_4px_6px_rgba(245,158,11,0.2)]">
+                <img src="/logo.svg" alt="BigBus Logo" className="w-full h-full object-contain" />
               </div>
-              <span className="font-extrabold text-xl tracking-tight uppercase">
+              <span className="font-extrabold text-xl tracking-tight uppercase group-hover:text-accent transition-colors">
                 Big<span className="text-accent">Bus</span>
               </span>
             </Link>

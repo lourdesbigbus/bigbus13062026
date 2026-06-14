@@ -200,28 +200,17 @@ export default async function HomePage({ searchParams }: PageProps) {
             </div>
           </div>
 
-          {/* Cards Rápidos de Credibilidade */}
-          <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-primary-light/45 p-6 rounded-2xl border border-primary-light/40 backdrop-blur-sm space-y-3">
-              <ShieldCheck className="h-8 w-8 text-accent" />
-              <h3 className="font-extrabold text-white text-base">Compra Segura</h3>
-              <p className="text-xs text-gray-400">Garantia total de procedência e documentação em dia para rodar sem preocupações.</p>
-            </div>
-
-            <div className="bg-primary-light/45 p-6 rounded-2xl border border-primary-light/40 backdrop-blur-sm space-y-3">
-              <Award className="h-8 w-8 text-accent" />
-              <h3 className="font-extrabold text-white text-base">Especialistas</h3>
-              <p className="text-xs text-gray-400">Atendimento especializado no setor de transportes e pesados comerciais.</p>
-            </div>
-
-            <div className="bg-primary-light/45 p-6 rounded-2xl border border-primary-light/40 backdrop-blur-sm space-y-3 sm:col-span-2">
-              <div className="flex items-center space-x-3">
-                <Users className="h-8 w-8 text-accent" />
-                <div>
-                  <h3 className="font-extrabold text-white text-base">Financiamento Facilitado</h3>
-                  <p className="text-xs text-gray-400">Parcerias com os maiores bancos de crédito pesado com taxas sob medida.</p>
-                </div>
-              </div>
+          {/* Destaque da Logomarca Oficial no Hero */}
+          <div className="lg:col-span-5 flex flex-col items-center justify-center space-y-6">
+            <div className="relative h-60 w-60 sm:h-72 sm:w-72 md:h-80 md:w-80 flex items-center justify-center">
+              {/* Efeitos de brilho e glow corporativos */}
+              <div className="absolute inset-0 bg-accent/20 rounded-full blur-[60px] animate-pulse" />
+              <div className="absolute inset-8 bg-blue-600/10 rounded-full blur-[40px]" />
+              <img
+                src="/logo.svg"
+                alt="BigBus Logomarca Oficial"
+                className="w-full h-full object-contain relative z-10 filter drop-shadow-[0_12px_24px_rgba(245,158,11,0.35)] hover:scale-105 transition-transform duration-500"
+              />
             </div>
           </div>
         </div>
@@ -230,6 +219,41 @@ export default async function HomePage({ searchParams }: PageProps) {
       {/* 2. Filtro de Busca */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-20">
         <AdvancedFilter />
+      </section>
+
+      {/* 2.5 Seção de Credibilidade (Reorganizada horizontalmente com visual premium) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="bg-card text-card-foreground p-6 rounded-2xl border border-border shadow-sm flex items-start space-x-4 hover:shadow-md transition-shadow">
+            <div className="bg-accent/10 p-3 rounded-xl text-accent shrink-0">
+              <ShieldCheck className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-base text-foreground">Compra 100% Segura</h3>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">Garantia total de procedência e documentação em dia para rodar sem preocupações.</p>
+            </div>
+          </div>
+
+          <div className="bg-card text-card-foreground p-6 rounded-2xl border border-border shadow-sm flex items-start space-x-4 hover:shadow-md transition-shadow">
+            <div className="bg-accent/10 p-3 rounded-xl text-accent shrink-0">
+              <Award className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-base text-foreground">Especialistas em Pesados</h3>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">25 anos de experiência e atendimento especializado no setor de transportes e pesados comerciais.</p>
+            </div>
+          </div>
+
+          <div className="bg-card text-card-foreground p-6 rounded-2xl border border-border shadow-sm flex items-start space-x-4 hover:shadow-md transition-shadow">
+            <div className="bg-accent/10 p-3 rounded-xl text-accent shrink-0">
+              <Users className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-base text-foreground">Financiamento Facilitado</h3>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">Parcerias com os maiores bancos de crédito com taxas e parcelas sob medida para você.</p>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* 3. Catálogo de Destaques */}

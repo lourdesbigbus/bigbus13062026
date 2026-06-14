@@ -89,9 +89,9 @@ export default function LoginPage() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 text-center space-y-6">
         {/* Logo */}
-        <div className="flex flex-col items-center justify-center space-y-3">
-          <div className="bg-accent p-3.5 rounded-xl flex items-center justify-center shadow-lg">
-            <Truck className="h-7 w-7 text-primary" />
+        <div className="flex flex-col items-center justify-center space-y-4">
+          <div className="relative h-28 w-28 drop-shadow-[0_10px_20px_rgba(245,158,11,0.35)] hover:scale-105 transition-transform duration-300">
+            <img src="/logo.svg" alt="BigBus Logo" className="w-full h-full object-contain" />
           </div>
           <div>
             <h1 className="font-extrabold text-3xl tracking-tight text-white uppercase">

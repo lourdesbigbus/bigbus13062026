@@ -98,8 +98,8 @@ export default function AdminLayout({
       <aside className="hidden md:flex flex-col w-64 bg-primary text-white border-r border-primary-light shrink-0">
         {/* Brand */}
         <div className="p-6 border-b border-primary-light flex items-center space-x-3">
-          <div className="bg-accent p-2 rounded-lg text-primary">
-            <Truck className="h-5 w-5" />
+          <div className="relative h-12 w-12 shrink-0 drop-shadow-[0_4px_6px_rgba(245,158,11,0.2)]">
+            <img src="/logo.svg" alt="BigBus Logo" className="w-full h-full object-contain" />
           </div>
           <div>
             <span className="font-extrabold text-lg uppercase tracking-tight block">
@@ -159,9 +159,11 @@ export default function AdminLayout({
       </aside>
 
       {/* 2. Header Mobile */}
-      <header className="md:hidden bg-primary text-white p-4 flex items-center justify-between border-b border-primary-light shrink-0">
+      <header className="md:hidden bg-primary text-white p-4 flex items-center justify-between border-b border-primary-light shrink-0 w-full">
         <Link href="/admin" className="flex items-center space-x-2">
-          <Truck className="h-5 w-5 text-accent" />
+          <div className="relative h-9 w-9 shrink-0 drop-shadow-[0_2px_4px_rgba(245,158,11,0.2)]">
+            <img src="/logo.svg" alt="BigBus Logo" className="w-full h-full object-contain" />
+          </div>
           <span className="font-extrabold uppercase text-base tracking-tight">
             Big<span className="text-accent">Bus</span> Admin
           </span>
@@ -183,7 +185,12 @@ export default function AdminLayout({
           {/* Drawer Content */}
           <div className="relative flex flex-col w-64 max-w-xs bg-primary text-white h-full z-50 animate-in slide-in-from-left duration-200">
             <div className="p-6 border-b border-primary-light flex items-center justify-between">
-              <span className="font-extrabold text-lg uppercase">BigBus Admin</span>
+              <div className="flex items-center space-x-2">
+                <div className="relative h-8 w-8 shrink-0">
+                  <img src="/logo.svg" alt="BigBus Logo" className="w-full h-full object-contain" />
+                </div>
+                <span className="font-extrabold text-lg uppercase">BigBus Admin</span>
+              </div>
               <button onClick={() => setMobileMenuOpen(false)} className="p-1 text-gray-400">
                 <X className="h-6 w-6" />
               </button>

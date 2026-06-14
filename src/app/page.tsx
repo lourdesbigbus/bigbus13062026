@@ -161,18 +161,26 @@ export default async function HomePage({ searchParams }: PageProps) {
 
   return (
     <div className="w-full space-y-16 pb-20">
-      {/* 1. Hero Section (Confiança e Tradição) */}
-      <section className="relative overflow-hidden bg-primary text-white py-24 sm:py-32 px-4 sm:px-6 lg:px-8">
-        {/* Background Gradients */}
-        <div className="absolute inset-0 z-0 bg-radial-gradient-hero opacity-30 pointer-events-none" />
-        <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-accent/10 blur-[150px] pointer-events-none" />
+      {/* 1. Hero Section (Confiança e Tradição com Fundo de Motorhome) */}
+      <section 
+        className="relative overflow-hidden text-white py-28 sm:py-36 px-4 sm:px-6 lg:px-8 bg-cover bg-center"
+        style={{ 
+          backgroundImage: "url('https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?auto=format&fit=crop&q=80&w=1600')" 
+        }}
+      >
+        {/* Overlays para garantir contraste e legibilidade perfeita do texto */}
+        <div className="absolute inset-0 bg-slate-950/85 z-0" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-transparent z-0" />
+        
+        {/* Brilho adicional */}
+        <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-accent/5 blur-[150px] pointer-events-none z-0" />
 
         <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 space-y-6 text-left">
-            {/* Selo dos 25 anos */}
-            <div className="inline-flex items-center space-x-2 bg-accent/10 border border-accent/20 px-4 py-2 rounded-full text-accent font-semibold text-xs tracking-wider uppercase animate-pulse">
-              <Sparkles className="h-4 w-4" />
-              <span>Mais de 25 Anos de Tradição e Robustez</span>
+            {/* Selo Super Destacado dos 25 anos de mercado */}
+            <div className="inline-flex items-center space-x-2 bg-accent text-primary px-5 py-2.5 rounded-full font-extrabold text-xs sm:text-sm tracking-wider uppercase shadow-xl shadow-accent/20 border border-accent-hover/30 animate-pulse">
+              <Sparkles className="h-4.5 w-4.5 shrink-0" />
+              <span>+25 Anos de Tradição e Solidez no Mercado</span>
             </div>
 
             <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-none text-white">

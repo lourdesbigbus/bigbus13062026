@@ -6,6 +6,10 @@ import { createClient } from '@supabase/supabase-js';
 function getSupabaseServer() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  console.log('getSupabaseServer: NEXT_PUBLIC_SUPABASE_URL definida?', !!url, 'NEXT_PUBLIC_SUPABASE_ANON_KEY definida?', !!anonKey);
+  if (!url) {
+    throw new Error('Erro de Configuração: A variável NEXT_PUBLIC_SUPABASE_URL não foi encontrada no ambiente de produção da Vercel.');
+  }
   return createClient(url, anonKey);
 }
 

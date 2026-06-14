@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { Truck, Lock, Mail, AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
+import { Truck, Lock, Mail, AlertCircle, Loader2, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,9 +12,11 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
-  // Estados de controle
+  // Estados de controle de login / recuperação
+  const [isForgot, setIsForgot] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Se o administrador já estiver logado, redirecionar direto para o painel
   useEffect(() => {
@@ -28,10 +29,12 @@ export default function LoginPage() {
     checkSession();
   }, [router]);
 
+  // Submit de Login
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccessMessage(null);
 
     try {
       const { data, error: authError } = await supabase.auth.signInWithPassword({
@@ -49,13 +52,10 @@ export default function LoginPage() {
         .single();
 
       if (profileError) {
-        // Se o perfil não existir na tabela (ex: primeiro login manual via console),
-        // mas as credenciais de auth são válidas, vamos permitir entrada, mas avisar
         console.warn('Perfil de banco de dados não encontrado, mas autenticação foi bem-sucedida.');
       }
 
       if (profile && profile.role !== 'admin') {
-        // Logout para usuários não administradores que tentam entrar no painel
         await supabase.auth.signOut();
         throw new Error('Acesso negado. Apenas administradores podem acessar esta área.');
       }
@@ -65,6 +65,30 @@ export default function LoginPage() {
     } catch (err: any) {
       console.error('Erro de autenticação:', err);
       setError(err.message || 'Credenciais inválidas. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Submit de Recuperação de Senha
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login`,
+      });
+
+      if (resetError) throw resetError;
+
+      setSuccessMessage('E-mail de recuperação enviado! Verifique sua caixa de entrada e spam.');
+      setEmail('');
+    } catch (err: any) {
+      console.error('Erro ao solicitar redefinição:', err);
+      setError(err.message || 'Erro ao enviar e-mail de recuperação. Tente novamente.');
     } finally {
       setLoading(false);
     }
@@ -106,8 +130,14 @@ export default function LoginPage() {
         {/* Card do Form */}
         <div className="bg-primary-light border border-slate-700/60 rounded-2xl py-8 px-6 sm:px-10 shadow-2xl space-y-6">
           <div className="text-center space-y-1">
-            <h2 className="text-lg font-bold text-white">Acesse sua Conta</h2>
-            <p className="text-xs text-slate-400">Insira seu e-mail e senha administrativo para entrar</p>
+            <h2 className="text-lg font-bold text-white">
+              {isForgot ? 'Recuperar Senha' : 'Acesse sua Conta'}
+            </h2>
+            <p className="text-xs text-slate-400">
+              {isForgot 
+                ? 'Digite seu e-mail para receber o link de redefinição' 
+                : 'Insira seu e-mail e senha administrativo para entrar'}
+            </p>
           </div>
 
           {/* Feedback de erro */}
@@ -118,65 +148,141 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-4 text-left">
-            {/* E-mail */}
-            <div className="flex flex-col space-y-1">
-              <label htmlFor="email" className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                E-mail
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-4 w-4 text-slate-400" />
-                </div>
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  placeholder="admin@bigbus.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-primary/40 text-white border border-slate-700 pl-10 pr-3 py-2.5 rounded-lg text-sm placeholder-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20"
-                />
-              </div>
+          {/* Feedback de sucesso */}
+          {successMessage && (
+            <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl flex items-start space-x-2.5 text-xs text-left animate-in fade-in duration-200">
+              <CheckCircle2 className="h-5 w-5 shrink-0 mt-0.5" />
+              <span>{successMessage}</span>
             </div>
+          )}
 
-            {/* Senha */}
-            <div className="flex flex-col space-y-1">
-              <label htmlFor="senha" className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Senha
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-4 w-4 text-slate-400" />
+          {isForgot ? (
+            /* Formulário de Recuperação de Senha */
+            <form onSubmit={handleResetPassword} className="space-y-4 text-left">
+              <div className="flex flex-col space-y-1">
+                <label htmlFor="reset-email" className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  E-mail de Cadastro
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-4 w-4 text-slate-400" />
+                  </div>
+                  <input
+                    id="reset-email"
+                    type="email"
+                    required
+                    placeholder="admin@bigbus.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-primary/40 text-white border border-slate-700 pl-10 pr-3 py-2.5 rounded-lg text-sm placeholder-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20"
+                  />
                 </div>
-                <input
-                  id="senha"
-                  type="password"
-                  required
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-primary/40 text-white border border-slate-700 pl-10 pr-3 py-2.5 rounded-lg text-sm placeholder-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20"
-                />
               </div>
-            </div>
 
-            {/* Botão de Enviar */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full inline-flex items-center justify-center space-x-2 bg-accent text-primary font-bold hover:bg-accent-hover disabled:opacity-50 py-3.5 rounded-lg text-sm shadow-lg transition-all duration-200 mt-2"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Autenticando...</span>
-                </>
-              ) : (
-                <span>Acessar Painel</span>
-              )}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full inline-flex items-center justify-center space-x-2 bg-accent text-primary font-bold hover:bg-accent-hover disabled:opacity-50 py-3.5 rounded-lg text-sm shadow-lg transition-all duration-200 mt-2"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Enviando Link...</span>
+                  </>
+                ) : (
+                  <span>Enviar Link de Recuperação</span>
+                )}
+              </button>
+
+              <div className="text-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsForgot(false);
+                    setError(null);
+                    setSuccessMessage(null);
+                  }}
+                  className="text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+                >
+                  Voltar para o Login
+                </button>
+              </div>
+            </form>
+          ) : (
+            /* Formulário de Login Tradicional */
+            <form onSubmit={handleLogin} className="space-y-4 text-left">
+              {/* E-mail */}
+              <div className="flex flex-col space-y-1">
+                <label htmlFor="email" className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                  E-mail
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-4 w-4 text-slate-400" />
+                  </div>
+                  <input
+                    id="email"
+                    type="email"
+                    required
+                    placeholder="admin@bigbus.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-primary/40 text-white border border-slate-700 pl-10 pr-3 py-2.5 rounded-lg text-sm placeholder-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20"
+                  />
+                </div>
+              </div>
+
+              {/* Senha */}
+              <div className="flex flex-col space-y-1">
+                <div className="flex justify-between items-center">
+                  <label htmlFor="senha" className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    Senha
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsForgot(true);
+                      setError(null);
+                      setSuccessMessage(null);
+                    }}
+                    className="text-[10px] font-semibold text-accent hover:underline transition-all"
+                  >
+                    Esqueci a senha
+                  </button>
+                </div>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-4 w-4 text-slate-400" />
+                  </div>
+                  <input
+                    id="senha"
+                    type="password"
+                    required
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-primary/40 text-white border border-slate-700 pl-10 pr-3 py-2.5 rounded-lg text-sm placeholder-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20"
+                  />
+                </div>
+              </div>
+
+              {/* Botão de Enviar */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full inline-flex items-center justify-center space-x-2 bg-accent text-primary font-bold hover:bg-accent-hover disabled:opacity-50 py-3.5 rounded-lg text-sm shadow-lg transition-all duration-200 mt-2"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Autenticando...</span>
+                  </>
+                ) : (
+                  <span>Acessar Painel</span>
+                )}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>

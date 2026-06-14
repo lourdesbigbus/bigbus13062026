@@ -137,8 +137,11 @@ export default function LeadsDashboard() {
   // Fallback se o banco não tiver as colunas status e observacoes
   const [fallbackAlert, setFallbackAlert] = useState(false);
 
-  // Configuração do WhatsApp de Contato
+  // Configuração de Contatos do Site
   const [configWhatsapp, setConfigWhatsapp] = useState('5511999999999');
+  const [configEndereco, setConfigEndereco] = useState('Rod. Presidente Dutra, KM 220 - Guarulhos / SP');
+  const [configTelefones, setConfigTelefones] = useState('(11) 99999-9999 / (11) 4002-8922');
+  const [configEmail, setConfigEmail] = useState('contato@bigbusveiculos.com.br');
   const [savingConfig, setSavingConfig] = useState(false);
   const [showConfigPanel, setShowConfigPanel] = useState(false);
 
@@ -181,11 +184,17 @@ export default function LeadsDashboard() {
     try {
       const { data, error } = await supabase
         .from('configuracoes')
-        .select('valor')
-        .eq('chave', 'whatsapp_contato')
-        .single();
-      if (!error && data?.valor) {
-        setConfigWhatsapp(data.valor);
+        .select('*');
+      if (!error && data) {
+        const wa = data.find((c: any) => c.chave === 'whatsapp_contato')?.valor;
+        const end = data.find((c: any) => c.chave === 'endereco_contato')?.valor;
+        const tels = data.find((c: any) => c.chave === 'telefones_contato')?.valor;
+        const em = data.find((c: any) => c.chave === 'email_contato')?.valor;
+
+        if (wa) setConfigWhatsapp(wa);
+        if (end) setConfigEndereco(end);
+        if (tels) setConfigTelefones(tels);
+        if (em) setConfigEmail(em);
       }
     } catch (e) {
       // Ignorar silenciosamente se a tabela configuracoes não existir
@@ -205,17 +214,22 @@ export default function LeadsDashboard() {
     try {
       const { error } = await supabase
         .from('configuracoes')
-        .upsert({ chave: 'whatsapp_contato', valor: cleanedNumber });
+        .upsert([
+          { chave: 'whatsapp_contato', valor: cleanedNumber },
+          { chave: 'endereco_contato', valor: configEndereco },
+          { chave: 'telefones_contato', valor: configTelefones },
+          { chave: 'email_contato', valor: configEmail },
+        ]);
 
       if (error) throw error;
-      alert('Número de WhatsApp de atendimento atualizado com sucesso no site!');
+      alert('Configurações de contato atualizadas com sucesso no site!');
       setShowConfigPanel(false);
     } catch (err: any) {
-      console.error('Erro ao salvar WhatsApp:', err);
+      console.error('Erro ao salvar configurações:', err);
       if (err.message && (err.message.includes('relation') || err.message.includes('configuracoes'))) {
         alert('Tabela "configuracoes" não encontrada. Execute o script SQL no painel do Supabase para criar a tabela e salvar permanentemente.');
       } else {
-        alert('Erro ao salvar número de WhatsApp: ' + err.message);
+        alert('Erro ao salvar configurações de contato: ' + err.message);
       }
     } finally {
       setSavingConfig(false);
@@ -408,7 +422,7 @@ export default function LeadsDashboard() {
             }`}
           >
             <Phone className="h-3.5 w-3.5" />
-            <span>Configurar WhatsApp do Site</span>
+            <span>Configurar Contatos do Site</span>
           </button>
 
           <div className="inline-flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-border">
@@ -438,17 +452,17 @@ export default function LeadsDashboard() {
         </div>
       </div>
 
-      {/* Painel de Configuração do WhatsApp do Site */}
+      {/* Painel de Configuração de Contatos do Site */}
       {showConfigPanel && (
-        <form onSubmit={handleSaveWhatsappConfig} className="bg-card p-6 rounded-2xl border border-border shadow-sm space-y-4 animate-in slide-in-from-top-2 duration-200">
+        <form onSubmit={handleSaveWhatsappConfig} className="bg-card p-6 rounded-2xl border border-border shadow-sm space-y-6 animate-in slide-in-from-top-2 duration-200">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <h3 className="font-extrabold text-base text-foreground flex items-center space-x-1.5">
                 <Phone className="h-4 w-4 text-accent" />
-                <span>WhatsApp de Atendimento do Portal</span>
+                <span>Configurações de Contato do Portal</span>
               </h3>
               <p className="text-xs text-slate-500">
-                Altere o número de WhatsApp que os clientes usam para iniciar conversas pelo botão flutuante e pelo topo do site.
+                Altere os telefones, endereço e e-mail exibidos no rodapé e no topo do site.
               </p>
             </div>
             <button type="button" onClick={() => setShowConfigPanel(false)} className="text-xs font-bold text-slate-400 hover:text-foreground">
@@ -456,10 +470,11 @@ export default function LeadsDashboard() {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
-            <div className="sm:col-span-2 space-y-1.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* WhatsApp de Atendimento */}
+            <div className="space-y-1.5">
               <label htmlFor="whats-input" className="text-[10px] uppercase font-bold text-slate-400">
-                Número do WhatsApp (Com DDI e DDD)
+                WhatsApp de Atendimento (Com DDI e DDD, apenas números)
               </label>
               <input
                 id="whats-input"
@@ -471,13 +486,67 @@ export default function LeadsDashboard() {
                 required
               />
               <span className="text-[10px] text-slate-400 block font-medium">
-                Insira apenas números incluindo o código do país (55 para Brasil) e o DDD. Ex: <code>5511999999999</code>.
+                Usado pelo botão flutuante e link do topo do site. Ex: <code>5511999999999</code>.
               </span>
             </div>
+
+            {/* Telefones de Exibição */}
+            <div className="space-y-1.5">
+              <label htmlFor="tels-input" className="text-[10px] uppercase font-bold text-slate-400">
+                Telefones de Exibição (Texto)
+              </label>
+              <input
+                id="tels-input"
+                type="text"
+                placeholder="Ex: (11) 99999-9999 / (11) 4002-8922"
+                value={configTelefones}
+                onChange={(e) => setConfigTelefones(e.target.value)}
+                className="w-full bg-background border border-border rounded-lg px-3.5 py-2.5 text-sm"
+                required
+              />
+              <span className="text-[10px] text-slate-400 block font-medium">
+                Como os números serão exibidos no rodapé.
+              </span>
+            </div>
+
+            {/* Endereço Comercial */}
+            <div className="space-y-1.5 md:col-span-2">
+              <label htmlFor="address-input" className="text-[10px] uppercase font-bold text-slate-400">
+                Endereço Comercial (Texto)
+              </label>
+              <input
+                id="address-input"
+                type="text"
+                placeholder="Ex: Rod. Presidente Dutra, KM 220 - Guarulhos / SP"
+                value={configEndereco}
+                onChange={(e) => setConfigEndereco(e.target.value)}
+                className="w-full bg-background border border-border rounded-lg px-3.5 py-2.5 text-sm"
+                required
+              />
+            </div>
+
+            {/* E-mail de Contato */}
+            <div className="space-y-1.5 md:col-span-2">
+              <label htmlFor="email-input" className="text-[10px] uppercase font-bold text-slate-400">
+                E-mail de Contato (Texto)
+              </label>
+              <input
+                id="email-input"
+                type="email"
+                placeholder="Ex: contato@bigbusveiculos.com.br"
+                value={configEmail}
+                onChange={(e) => setConfigEmail(e.target.value)}
+                className="w-full bg-background border border-border rounded-lg px-3.5 py-2.5 text-sm"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-2">
             <button
               type="submit"
               disabled={savingConfig}
-              className="bg-primary dark:bg-accent text-white dark:text-primary hover:opacity-90 disabled:opacity-50 font-bold px-5 py-3 rounded-lg text-xs shadow transition-all flex items-center justify-center space-x-1.5"
+              className="bg-primary dark:bg-accent text-white dark:text-primary hover:opacity-90 disabled:opacity-50 font-bold px-6 py-3.5 rounded-lg text-xs shadow transition-all flex items-center justify-center space-x-1.5"
             >
               {savingConfig ? (
                 <>
@@ -487,7 +556,7 @@ export default function LeadsDashboard() {
               ) : (
                 <>
                   <Save className="h-4 w-4" />
-                  <span>Salvar Novo Número</span>
+                  <span>Salvar Alterações</span>
                 </>
               )}
             </button>

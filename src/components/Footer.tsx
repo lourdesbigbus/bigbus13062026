@@ -4,8 +4,34 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Truck, Mail, Phone, MapPin, Calendar } from 'lucide-react';
 
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+
 export default function Footer() {
   const pathname = usePathname();
+  const [endereco, setEndereco] = useState('Rod. Presidente Dutra, KM 220 - Guarulhos / SP');
+  const [telefones, setTelefones] = useState('(11) 99999-9999 / (11) 4002-8922');
+  const [email, setEmail] = useState('contato@bigbusveiculos.com.br');
+
+  useEffect(() => {
+    const fetchConfigs = async () => {
+      try {
+        const { data, error } = await supabase.from('configuracoes').select('*');
+        if (!error && data) {
+          const end = data.find((c: any) => c.chave === 'endereco_contato')?.valor;
+          const tels = data.find((c: any) => c.chave === 'telefones_contato')?.valor;
+          const em = data.find((c: any) => c.chave === 'email_contato')?.valor;
+
+          if (end) setEndereco(end);
+          if (tels) setTelefones(tels);
+          if (em) setEmail(em);
+        }
+      } catch (e) {
+        // Fallback silencioso
+      }
+    };
+    fetchConfigs();
+  }, []);
 
   // Ocultar Footer público nas rotas administrativa e login
   if (pathname?.startsWith('/admin') || pathname?.startsWith('/login')) {
@@ -81,15 +107,15 @@ export default function Footer() {
             <h3 className="text-white font-semibold text-sm tracking-wider uppercase mb-4">Contato</h3>
             <div className="flex items-start space-x-3">
               <MapPin className="h-5 w-5 text-accent shrink-0 mt-0.5" />
-              <span>Rod. Presidente Dutra, KM 220 - Guarulhos / SP</span>
+              <span>{endereco}</span>
             </div>
             <div className="flex items-center space-x-3">
               <Phone className="h-5 w-5 text-accent shrink-0" />
-              <span>(11) 99999-9999 / (11) 4002-8922</span>
+              <span>{telefones}</span>
             </div>
             <div className="flex items-center space-x-3">
               <Mail className="h-5 w-5 text-accent shrink-0" />
-              <span>contato@bigbusveiculos.com.br</span>
+              <span>{email}</span>
             </div>
           </div>
         </div>

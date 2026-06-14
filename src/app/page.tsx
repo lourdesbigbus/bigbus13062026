@@ -177,11 +177,11 @@ export default async function HomePage({ searchParams }: PageProps) {
 
         <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 space-y-8 text-left">
-            {/* Selo Super Ampliado dos 25 anos de mercado com sombra dourada forte */}
+            {/* Selo Super Ampliado dos 25 anos de mercado com a nova frase do usuário */}
             <div>
-              <div className="inline-flex items-center space-x-3 bg-accent text-primary px-7 py-3.5 rounded-full font-black text-sm sm:text-base tracking-widest uppercase shadow-2xl shadow-accent/50 border-2 border-white/20 animate-pulse hover:scale-105 transition-transform duration-300 cursor-default">
-                <Sparkles className="h-5.5 w-5.5 shrink-0" />
-                <span>+25 Anos de Mercado e Tradição</span>
+              <div className="inline-flex items-center space-x-2.5 bg-accent text-primary px-6 py-3 rounded-2xl sm:rounded-full font-extrabold text-xs sm:text-sm shadow-2xl shadow-accent/40 border-2 border-white/20 animate-pulse hover:scale-102 transition-transform duration-300 cursor-default text-left max-w-full">
+                <Sparkles className="h-4.5 w-4.5 shrink-0" />
+                <span>Experiência que faz a diferença: 25 anos negociando ônibus com transparência e confiança</span>
               </div>
             </div>
 

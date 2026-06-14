@@ -11,7 +11,7 @@ const INITIAL_MOCK_VEICULOS: Veiculo[] = [
   {
     id: 'mock-1',
     titulo: 'Mercedes-Benz Sprinter 415 CDI Executiva Escolar 16L',
-    descricao: 'Van Sprinter executiva completa, ar condicionado central, tacógrafo em dia.',
+    descricao: 'Van Sprinter executiva completa, ar condicionado central, tacógrafo em dia, ideal para fretamento ou escolar.',
     preco: 169900,
     tipo: 'van',
     marca: 'Mercedes-Benz',
@@ -23,12 +23,19 @@ const INITIAL_MOCK_VEICULOS: Veiculo[] = [
     status: 'disponivel',
     criado_em: new Date().toISOString(),
     anunciado_por: null,
-    fotos: []
+    fotos: [
+      {
+        id: 'f-1',
+        veiculo_id: 'mock-1',
+        url_foto: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=800',
+        criado_em: new Date().toISOString(),
+      },
+    ],
   },
   {
     id: 'mock-2',
     titulo: 'Marcopolo Paradiso G7 1200 Rodoviário Scania K360',
-    descricao: 'Ônibus rodoviário de turismo, 46 lugares com sanitário.',
+    descricao: 'Ônibus rodoviário de turismo, 46 lugares com sanitário, ar condicionado central, conservado e revisado.',
     preco: 420000,
     tipo: 'onibus',
     marca: 'Marcopolo',
@@ -40,8 +47,63 @@ const INITIAL_MOCK_VEICULOS: Veiculo[] = [
     status: 'disponivel',
     criado_em: new Date().toISOString(),
     anunciado_por: null,
-    fotos: []
-  }
+    fotos: [
+      {
+        id: 'f-2',
+        veiculo_id: 'mock-2',
+        url_foto: 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&q=80&w=800',
+        criado_em: new Date().toISOString(),
+      },
+    ],
+  },
+  {
+    id: 'mock-3',
+    titulo: 'Toyota Hilux CD SRV 2.8 4x4 Diesel Automática',
+    descricao: 'Hilux SRV extremamente nova, único dono, revisões em concessionária, capota marítima e pneus novos.',
+    preco: 215000,
+    tipo: 'carro',
+    marca: 'Toyota',
+    modelo: 'Hilux CD SRV',
+    ano_fabricacao: 2020,
+    ano_modelo: 2020,
+    quilometragem: 89000,
+    combustivel: 'Diesel',
+    status: 'disponivel',
+    criado_em: new Date().toISOString(),
+    anunciado_por: null,
+    fotos: [
+      {
+        id: 'f-3',
+        veiculo_id: 'mock-3',
+        url_foto: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=800',
+        criado_em: new Date().toISOString(),
+      },
+    ],
+  },
+  {
+    id: 'mock-4',
+    titulo: 'Motor Cummins ISC 315 HP Completo Retificado',
+    descricao: 'Motor Cummins ISC completo de alta durabilidade, bloco retificado na garantia, ideal para caminhões e ônibus.',
+    preco: 45000,
+    tipo: 'motor',
+    marca: 'Cummins',
+    modelo: 'ISC 315 HP',
+    ano_fabricacao: 2019,
+    ano_modelo: 2019,
+    quilometragem: 0,
+    combustivel: 'Diesel',
+    status: 'disponivel',
+    criado_em: new Date().toISOString(),
+    anunciado_por: null,
+    fotos: [
+      {
+        id: 'f-4',
+        veiculo_id: 'mock-4',
+        url_foto: 'https://images.unsplash.com/photo-1508974239320-0a029497e820?auto=format&fit=crop&q=80&w=800',
+        criado_em: new Date().toISOString(),
+      },
+    ],
+  },
 ];
 
 export default function AdminDashboard() {

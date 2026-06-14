@@ -163,31 +163,33 @@ export default async function HomePage({ searchParams }: PageProps) {
     <div className="w-full space-y-16 pb-20">
       {/* 1. Hero Section (Confiança e Tradição com Fundo de Motorhome) */}
       <section 
-        className="relative overflow-hidden text-white py-28 sm:py-36 px-4 sm:px-6 lg:px-8 bg-cover bg-center"
+        className="relative overflow-hidden text-white py-32 sm:py-40 px-4 sm:px-6 lg:px-8 bg-cover bg-center"
         style={{ 
           backgroundImage: "url('https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?auto=format&fit=crop&q=80&w=1600')" 
         }}
       >
-        {/* Overlays para garantir contraste e legibilidade perfeita do texto */}
-        <div className="absolute inset-0 bg-slate-950/85 z-0" />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-transparent z-0" />
+        {/* Overlays otimizados: fundo mais claro para exibir o motorhome, mantendo alto contraste no texto da esquerda */}
+        <div className="absolute inset-0 bg-slate-950/45 z-0" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/70 to-slate-950/20 z-0" />
         
-        {/* Brilho adicional */}
-        <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-accent/5 blur-[150px] pointer-events-none z-0" />
+        {/* Brilho adicional de fundo */}
+        <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-accent/10 blur-[150px] pointer-events-none z-0" />
 
         <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-7 space-y-6 text-left">
-            {/* Selo Super Destacado dos 25 anos de mercado */}
-            <div className="inline-flex items-center space-x-2 bg-accent text-primary px-5 py-2.5 rounded-full font-extrabold text-xs sm:text-sm tracking-wider uppercase shadow-xl shadow-accent/20 border border-accent-hover/30 animate-pulse">
-              <Sparkles className="h-4.5 w-4.5 shrink-0" />
-              <span>+25 Anos de Tradição e Solidez no Mercado</span>
+          <div className="lg:col-span-7 space-y-8 text-left">
+            {/* Selo Super Ampliado dos 25 anos de mercado com sombra dourada forte */}
+            <div>
+              <div className="inline-flex items-center space-x-3 bg-accent text-primary px-7 py-3.5 rounded-full font-black text-sm sm:text-base tracking-widest uppercase shadow-2xl shadow-accent/50 border-2 border-white/20 animate-pulse hover:scale-105 transition-transform duration-300 cursor-default">
+                <Sparkles className="h-5.5 w-5.5 shrink-0" />
+                <span>+25 Anos de Mercado e Tradição</span>
+              </div>
             </div>
 
-            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-none text-white">
+            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-none text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.85)]">
               Líder Nacional em <span className="text-accent">Veículos Pesados</span> e Comerciais
             </h1>
 
-            <p className="text-gray-300 text-base sm:text-lg max-w-xl leading-relaxed">
+            <p className="text-gray-200 text-base sm:text-lg max-w-xl leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]">
               Encontre a melhor seleção de Vans, Ônibus, Carros e Motores do Brasil. Facilitamos sua compra, troca e oferecemos simulações rápidas de financiamento.
             </p>
 

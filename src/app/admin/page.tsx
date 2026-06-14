@@ -346,7 +346,14 @@ export default function AdminDashboard() {
 
                           {/* Título e especificações básicas */}
                           <td className="p-4 max-w-xs sm:max-w-sm">
-                            <div className="font-bold text-foreground truncate">{veiculo.titulo}</div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-bold text-foreground truncate">{veiculo.titulo}</span>
+                              {veiculo.id.startsWith('mock-') && (
+                                <span className="bg-amber-500/10 text-amber-600 border border-amber-500/20 text-[9px] px-1.5 py-0.5 rounded font-extrabold uppercase shrink-0">
+                                  Demo
+                                </span>
+                              )}
+                            </div>
                             <div className="text-xs text-slate-400 truncate">
                               {veiculo.marca} • {veiculo.modelo} • {veiculo.ano_modelo} • {veiculo.quilometragem} km
                             </div>

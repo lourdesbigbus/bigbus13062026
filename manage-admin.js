@@ -56,9 +56,10 @@ async function main() {
       return;
     }
 
-    console.log(`Usuário encontrado (ID: ${user.id}). Redefinindo senha...`);
+    console.log(`Usuário encontrado (ID: ${user.id}). Redefinindo senha e confirmando e-mail...`);
     const { data, error: updateError } = await supabase.auth.admin.updateUserById(user.id, {
-      password: newPassword
+      password: newPassword,
+      email_confirm: true
     });
 
     if (updateError) {

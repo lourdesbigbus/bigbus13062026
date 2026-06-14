@@ -2,19 +2,40 @@
 
 import { usePathname } from 'next/navigation';
 
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
+
 export default function WhatsAppButton() {
   const pathname = usePathname();
+  const [whatsappNumber, setWhatsappNumber] = useState('5511999999999');
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('configuracoes')
+          .select('valor')
+          .eq('chave', 'whatsapp_contato')
+          .single();
+        if (!error && data?.valor) {
+          setWhatsappNumber(data.valor);
+        }
+      } catch (e) {
+        // Fallback silencioso
+      }
+    };
+    fetchConfig();
+  }, []);
 
   // Ocultar o botão flutuante nas rotas de administração e de login
   if (pathname?.startsWith('/admin') || pathname?.startsWith('/login')) {
     return null;
   }
 
-  const telefone = '5511999999999'; // Substitua pelo número real da BigBus
   const mensagem = encodeURIComponent(
     'Olá! Estava navegando no portal da BigBus e gostaria de mais informações sobre os veículos.'
   );
-  const whatsappUrl = `https://wa.me/${telefone}?text=${mensagem}`;
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${mensagem}`;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex items-center justify-center">

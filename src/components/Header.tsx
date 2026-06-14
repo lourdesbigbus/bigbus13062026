@@ -1,13 +1,47 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, ShieldAlert, Phone, Truck, KeyRound } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const [whatsappNumber, setWhatsappNumber] = useState('5511999999999');
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('configuracoes')
+          .select('valor')
+          .eq('chave', 'whatsapp_contato')
+          .single();
+        if (!error && data?.valor) {
+          setWhatsappNumber(data.valor);
+        }
+      } catch (e) {
+        // Fallback silencioso
+      }
+    };
+    fetchConfig();
+  }, []);
+
+  const formatPhoneNumber = (phone: string) => {
+    let clean = phone.replace(/\D/g, '');
+    if (clean.startsWith('55') && clean.length >= 12) {
+      clean = clean.slice(2);
+    }
+    if (clean.length === 11) {
+      return `(${clean.slice(0, 2)}) ${clean.slice(2, 7)}-${clean.slice(7)}`;
+    }
+    if (clean.length === 10) {
+      return `(${clean.slice(0, 2)}) ${clean.slice(2, 6)}-${clean.slice(6)}`;
+    }
+    return phone;
+  };
 
   // Ocultar Navbar pública nas rotas administrativa e login
   if (pathname?.startsWith('/admin') || pathname?.startsWith('/login')) {
@@ -57,13 +91,13 @@ export default function Header() {
           {/* Actions & Admin Link */}
           <div className="hidden md:flex items-center space-x-4">
             <a
-              href="https://wa.me/5511999999999"
+              href={`https://wa.me/${whatsappNumber}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center space-x-2 text-sm text-gray-300 hover:text-accent transition-colors py-2 px-3 rounded-full hover:bg-white/5"
             >
               <Phone className="h-4 w-4" />
-              <span>(11) 99999-9999</span>
+              <span>{formatPhoneNumber(whatsappNumber)}</span>
             </a>
             <Link
               href="/login"
@@ -103,14 +137,14 @@ export default function Header() {
             ))}
             <hr className="border-primary-light" />
             <a
-              href="https://wa.me/5511999999999"
+              href={`https://wa.me/${whatsappNumber}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center space-x-2 text-gray-300 hover:text-accent py-2"
               onClick={() => setIsOpen(false)}
             >
               <Phone className="h-5 w-5" />
-              <span>(11) 99999-9999</span>
+              <span>{formatPhoneNumber(whatsappNumber)}</span>
             </a>
             <Link
               href="/login"

@@ -137,6 +137,11 @@ export default function LeadsDashboard() {
   // Fallback se o banco não tiver as colunas status e observacoes
   const [fallbackAlert, setFallbackAlert] = useState(false);
 
+  // Configuração do WhatsApp de Contato
+  const [configWhatsapp, setConfigWhatsapp] = useState('5511999999999');
+  const [savingConfig, setSavingConfig] = useState(false);
+  const [showConfigPanel, setShowConfigPanel] = useState(false);
+
   const fetchLeads = async () => {
     setLoading(true);
     try {
@@ -172,9 +177,50 @@ export default function LeadsDashboard() {
     }
   };
 
+  const fetchWhatsappConfig = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('configuracoes')
+        .select('valor')
+        .eq('chave', 'whatsapp_contato')
+        .single();
+      if (!error && data?.valor) {
+        setConfigWhatsapp(data.valor);
+      }
+    } catch (e) {
+      // Ignorar silenciosamente se a tabela configuracoes não existir
+    }
+  };
+
   useEffect(() => {
     fetchLeads();
+    fetchWhatsappConfig();
   }, []);
+
+  const handleSaveWhatsappConfig = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingConfig(true);
+    const cleanedNumber = configWhatsapp.replace(/\D/g, '');
+
+    try {
+      const { error } = await supabase
+        .from('configuracoes')
+        .upsert({ chave: 'whatsapp_contato', valor: cleanedNumber });
+
+      if (error) throw error;
+      alert('Número de WhatsApp de atendimento atualizado com sucesso no site!');
+      setShowConfigPanel(false);
+    } catch (err: any) {
+      console.error('Erro ao salvar WhatsApp:', err);
+      if (err.message && (err.message.includes('relation') || err.message.includes('configuracoes'))) {
+        alert('Tabela "configuracoes" não encontrada. Execute o script SQL no painel do Supabase para criar a tabela e salvar permanentemente.');
+      } else {
+        alert('Erro ao salvar número de WhatsApp: ' + err.message);
+      }
+    } finally {
+      setSavingConfig(false);
+    }
+  };
 
   // Atualizar Status do Lead (Pipeline)
   const updateLeadStatus = async (leadId: string, newStatus: string) => {
@@ -351,32 +397,103 @@ export default function LeadsDashboard() {
           </p>
         </div>
 
-        {/* Toggles de Visualização */}
-        <div className="inline-flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-border">
+        {/* Botões e Toggles */}
+        <div className="flex flex-wrap gap-2 items-center">
           <button
-            onClick={() => setViewMode('kanban')}
-            className={`inline-flex items-center space-x-1.5 px-4.5 py-2.5 rounded-lg text-xs font-bold transition-all ${
-              viewMode === 'kanban'
-                ? 'bg-card text-foreground shadow-sm'
-                : 'text-slate-500 hover:text-slate-950 dark:hover:text-white'
+            onClick={() => setShowConfigPanel(!showConfigPanel)}
+            className={`inline-flex items-center space-x-1.5 px-4.5 py-2.5 rounded-lg text-xs font-bold transition-all border ${
+              showConfigPanel
+                ? 'bg-accent text-primary border-accent shadow-sm'
+                : 'bg-card border-border hover:bg-slate-500/5 text-foreground'
             }`}
           >
-            <LayoutGrid className="h-3.5 w-3.5" />
-            <span>Kanban (Funil)</span>
+            <Phone className="h-3.5 w-3.5" />
+            <span>Configurar WhatsApp do Site</span>
           </button>
-          <button
-            onClick={() => setViewMode('list')}
-            className={`inline-flex items-center space-x-1.5 px-4.5 py-2.5 rounded-lg text-xs font-bold transition-all ${
-              viewMode === 'list'
-                ? 'bg-card text-foreground shadow-sm'
-                : 'text-slate-500 hover:text-slate-950 dark:hover:text-white'
-            }`}
-          >
-            <List className="h-3.5 w-3.5" />
-            <span>Tabela (Lista)</span>
-          </button>
+
+          <div className="inline-flex bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-border">
+            <button
+              onClick={() => setViewMode('kanban')}
+              className={`inline-flex items-center space-x-1.5 px-4.5 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'kanban'
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-slate-500 hover:text-slate-950 dark:hover:text-white'
+              }`}
+            >
+              <LayoutGrid className="h-3.5 w-3.5" />
+              <span>Kanban (Funil)</span>
+            </button>
+            <button
+              onClick={() => setViewMode('list')}
+              className={`inline-flex items-center space-x-1.5 px-4.5 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'list'
+                  ? 'bg-card text-foreground shadow-sm'
+                  : 'text-slate-500 hover:text-slate-950 dark:hover:text-white'
+              }`}
+            >
+              <List className="h-3.5 w-3.5" />
+              <span>Tabela (Lista)</span>
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Painel de Configuração do WhatsApp do Site */}
+      {showConfigPanel && (
+        <form onSubmit={handleSaveWhatsappConfig} className="bg-card p-6 rounded-2xl border border-border shadow-sm space-y-4 animate-in slide-in-from-top-2 duration-200">
+          <div className="flex items-start justify-between">
+            <div className="space-y-1">
+              <h3 className="font-extrabold text-base text-foreground flex items-center space-x-1.5">
+                <Phone className="h-4 w-4 text-accent" />
+                <span>WhatsApp de Atendimento do Portal</span>
+              </h3>
+              <p className="text-xs text-slate-500">
+                Altere o número de WhatsApp que os clientes usam para iniciar conversas pelo botão flutuante e pelo topo do site.
+              </p>
+            </div>
+            <button type="button" onClick={() => setShowConfigPanel(false)} className="text-xs font-bold text-slate-400 hover:text-foreground">
+              ✕ Fechar
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+            <div className="sm:col-span-2 space-y-1.5">
+              <label htmlFor="whats-input" className="text-[10px] uppercase font-bold text-slate-400">
+                Número do WhatsApp (Com DDI e DDD)
+              </label>
+              <input
+                id="whats-input"
+                type="text"
+                placeholder="Ex: 5511999999999"
+                value={configWhatsapp}
+                onChange={(e) => setConfigWhatsapp(e.target.value)}
+                className="w-full bg-background border border-border rounded-lg px-3.5 py-2.5 text-sm"
+                required
+              />
+              <span className="text-[10px] text-slate-400 block font-medium">
+                Insira apenas números incluindo o código do país (55 para Brasil) e o DDD. Ex: <code>5511999999999</code>.
+              </span>
+            </div>
+            <button
+              type="submit"
+              disabled={savingConfig}
+              className="bg-primary dark:bg-accent text-white dark:text-primary hover:opacity-90 disabled:opacity-50 font-bold px-5 py-3 rounded-lg text-xs shadow transition-all flex items-center justify-center space-x-1.5"
+            >
+              {savingConfig ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Salvando...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  <span>Salvar Novo Número</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      )}
 
       {/* 2. Banner de Alerta de Banco de Dados (Fallback) */}
       {fallbackAlert && (
